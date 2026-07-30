@@ -4,3 +4,4 @@ transformers==5.14.1
 pillow==12.2.0
 donut-python==1.0.9
 pdf2image==1.17.0
+pptxtoimages==0.1.14

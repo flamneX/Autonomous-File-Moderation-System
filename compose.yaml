@@ -7,7 +7,10 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+version: '3.8'
+
 services:
+  # Donut
   flask-app:
     image: donut-flask:latest
     container_name: donut-flask
@@ -17,6 +20,7 @@ services:
     ports:
       - "5000:5000"
 
+  #n8n
   n8n:
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
@@ -29,8 +33,28 @@ services:
       - n8n_data:/home/node/.n8n
       - ./n8n:/files
 
+  # Hermes Agent
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes-agent
+    restart: unless-stopped
+    volumes:
+      - hermes_data:/home/node/.hermes
+    environment:
+      - HERMES_PROVIDER=openrouter
+      - HERMES_API_KEY=${HERMES_API_KEY}
+    ports:
+      - '9119:9119'
+      - '8642:8642'
+    networks:
+      - n8n-net
+    # Keeps the messaging gateway running persistently in the background
+    command: hermes gateway run 
+
 volumes:
   n8n_data:
+    external: false
+  hermes_data:
     external: false
 
 networks:
