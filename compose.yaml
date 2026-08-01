@@ -7,8 +7,6 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
-version: '3.8'
-
 services:
   # Donut
   flask-app:
@@ -49,13 +47,34 @@ services:
     networks:
       - n8n-net
     # Keeps the messaging gateway running persistently in the background
-    command: hermes gateway run 
+    command: hermes gateway run
+
+  # Ollama  
+  ollama:
+    volumes:
+      - ollama_data:/home/node/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    networks:
+      - n8n-net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
 volumes:
   n8n_data:
     external: false
   hermes_data:
-    external: false
+  ollama_data:
 
 networks:
   n8n-net:
