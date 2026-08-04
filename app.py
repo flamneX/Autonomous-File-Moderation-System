@@ -88,7 +88,7 @@ def donut_extract():
 
 # Execute Donut Model for Image Text Extraction
 def donut_execute(img_list):
-    result = []
+    result = ''
 
     try:
         # Iterate Over Each Image
@@ -119,7 +119,7 @@ def donut_execute(img_list):
             sequence = re.sub(r"<.*?>", "", sequence, count=1).strip()
 
             # Convert token structures directly to clean text/JSON representation
-            result.append(processor.token2json(sequence))
+            result += processor.token2json(sequence).get('text_sequence')
 
         return jsonify({
             "result": result

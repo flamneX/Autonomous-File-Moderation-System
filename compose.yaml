@@ -25,11 +25,18 @@ services:
     restart: unless-stopped
     networks:
       - n8n-net
+    environment:
+      - N8N_BLOCK_FS_READ_ACCESS=false
+      - N8N_BLOCK_FS_WRITE_ACCESS=false
+      - N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES=false
+      - N8N_RESTRICT_FILE_ACCESS_TO=/n8n_detect
+      - NODES_EXCLUDE="[]"
     ports:
       - "5678:5678"
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n:/files
+      - C:/n8n_detect:/n8n_detect
 
   # Hermes Agent
   hermes:
@@ -69,12 +76,28 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+  
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - n8n-net
 
 volumes:
   n8n_data:
     external: false
   hermes_data:
   ollama_data:
+  postgres_data:
 
 networks:
   n8n-net:
